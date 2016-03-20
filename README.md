@@ -14,6 +14,8 @@ to make some tasks easier for R users working on conventional RDBMSs.
 > **Note** that this package is not on CRAN yet. Therefore, we will
 > install straight from GitHub.
 
+Install `devtools` package if you don't have it installed yet:
+
     install.packages("devtools")
 
 Install from github using the `develop` branch as there are currently
