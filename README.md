@@ -11,12 +11,15 @@ to make some tasks easier for R users working on conventional RDBMSs.
 
 ## Quickstart
 
-> **Note** that this package is not on CRAN yet.
-
-Install from github (and `devtools` if you don't have it installed):
+> **Note** that this package is not on CRAN yet. Therefore, we will
+> install straight from GitHub.
 
     install.packages("devtools")
-    devtools::install_github("vst/xdbi", build_vignettes=TRUE)
+
+Install from github using the `develop` branch as there are currently
+no releases:
+
+    devtools::install_github("vst/xdbi", ref="develop", build_vignettes=TRUE)
 
 Read the vignette:
 
