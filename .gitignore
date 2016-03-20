@@ -1,0 +1,7 @@
+inst/doc
+.RData
+.Rproj.user
+.Rhistory
+*.Rds
+vignettes/*.R
+vignettes/*.html

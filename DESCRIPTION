@@ -1,0 +1,24 @@
+Package: xdbi
+Title: Convenience Extensions to DBI Package
+Version: 0.0.0.9000
+Authors@R: person("Vehbi Sinan", "Tunalioglu", email="vst@vsthost.com", role = c("aut", "cre"))
+Description: DBI is a powerful and the standard package to interface
+    relational database management systems (RBDMS). For most users,
+    however, it might still be cumbersome to manage database
+    connections, send SQL queries to and obtain their results from an
+    RDBMS. With this package, we aim to make some tasks easier for R
+    users working on conventional RDBMSs.
+Depends:
+    R (>= 3.2.3)
+Imports:
+    DBI,
+    stringr
+Suggests:
+    RSQLite,
+    knitr,
+    rmarkdown
+License: GPL-2
+URL: https://github.com/vst/xdbi
+LazyData: true
+RoxygenNote: 5.0.1
+VignetteBuilder: knitr

@@ -1,0 +1,89 @@
+---
+title: "Introduction to xdbi"
+author: "Vehbi Sinan Tunalioglu"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Import the library:
+
+```{r}
+library(xdbi)
+```
+
+Establish a connection:
+
+```{r, results="hide"}
+connect(RSQLite::SQLite(), ":memory:")
+```
+
+Write a `data.frame` to a new table:
+
+```{r, results="hide"}
+data(mtcars)
+writeTable(mtcars, "mtcars")
+```
+
+Read an entire table from the database:
+
+```{r}
+myData <- readTable("mtcars")
+head(myData)
+```
+
+Write the same data with row names:
+
+```{r, results="hide"}
+writeTable(mtcars, "mtcars2", withRowNames=TRUE)
+```
+
+This will result in reading with row names:
+
+```{r}
+myData2 <- readTable("mtcars2")
+head(myData2)
+```
+
+Now issue an SQL command and note that the `row_names` column is not
+interpreted as real row names but just as an ordinary column:
+
+```{r}
+readData("SELECT * FROM mtcars2 WHERE cyl <= %d", 6)
+```
+
+We still have access to `DBI` interface:
+
+```{r}
+resultSet <- DBI::dbSendQuery(getConnection(), sprintf("SELECT * FROM mtcars2 WHERE cyl <= %d", 6))
+DBI::dbFetch(resultSet, n=-1)
+```
+
+But, we need to clear the result set manually:
+
+```{r, results="hide"}
+DBI::dbClearResult(resultSet)
+```
+
+We can also import partial table as long as column names are a match
+(now things are getting a bit more interesting finally):
+
+```{r, results="hide"}
+myInput <- data.frame(cyl=c(4,6,NA), disp=c(NA, NA, 300))
+writeData("mtcars", myInput)
+```
+
+Then the resulting table would read:
+
+```{r}
+readTable("mtcars")
+```
+
+Disconnect the existing connection:
+
+```{r, results="hide"}
+disconnect()
+```
