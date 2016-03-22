@@ -9,6 +9,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+## Quickstart
+
 Import the library:
 
 ```{r}
@@ -84,6 +86,77 @@ readTable("mtcars")
 
 Disconnect the existing connection:
 
+```{r, eval=FALSE, results="hide"}
+disconnect()
+```
+
+## Working with rows
+
+You can insert individual records. Let's start with a dummy table:
+
+```{r}
+myTable <- data.frame(no="12345", name="Alice", gpa=3.4)
+```
+
+Write the table to DB:
+
 ```{r, results="hide"}
+writeTable("gpas", myTable)
+```
+
+Let's write a new record:
+
+```{r, results="hide"}
+insertRow("gpas", no=23456, name="Bob", gpa=1.2)
+```
+
+Is it there?
+
+```{r}
+readTable("gpas")
+```
+
+Yep... How about updating a row? The second argument in the below
+statements are for finding out which rows to update.
+
+```{r, results="hide"}
+updateRow("gpas", list(no=12345), gpa=4.0)
+updateRow("gpas", list(no=23456, name="Bob"), gpa=2.0, no="98765")
+```
+
+Changes?
+
+```{r}
+readTable("gpas")
+```
+
+You can `select` rows, too:
+
+```{r}
+selectRow("gpas", no=12345, .ordering="gpa desc")
+```
+
+We can check if any rows exists with the given where clause:
+
+```{r}
+existsRow("gpas", no=12345)
+existsRow("gpas", no=00000)
+```
+
+Finally, we can do an `upsert`, ie. update if it exists:
+
+```{r, results="hide"}
+upsertRow("gpas", list(no=12345), gpa=1.0, name="Alice")
+upsertRow("gpas", list(no=45678), gpa=4.0, name="Susan")
+```
+
+Hence:
+
+```{r}
+readTable("gpas")
+```
+
+```{r, echo=FALSE, results="hide"}
+## End of vignette, close the connection:
 disconnect()
 ```

@@ -21,6 +21,15 @@
 }
 
 
+##' Constructs a where clause.
+##'
+##' @param tuples key/value pairs for equality test.
+##' @return The where clause
+.clauseWhere <- function (tuples) {
+    paste(lapply(names(tuples), function (key) {sprintf("`%s` == %s", key, .escapeValues(tuples[[key]]))}), collapse=" AND ")
+}
+
+
 ##' Connects to an RDBMS.
 ##'
 ##' Note that this function returns available valid connection if
@@ -215,4 +224,136 @@ writeData <- function (.table, x) {
 
     ## Run the statement:
     DBI::dbClearResult(DBI::dbSendQuery(getConnection(), statement))
+}
+
+
+##' Insert a given set of values as rows.
+##'
+##' @param .table The name of the database table.
+##' @param ... Values
+##' @return Nothing special.
+##'
+##' @export
+insertRow <- function (.table, ...) {
+    ## Get arguments:
+    args <- list(...)
+
+    ## Write the table and return:
+    writeData(.table, as.data.frame(args))
+}
+
+
+##' Update a row
+##'
+##' @param .table The name of the table.
+##' @param .where The where clause.
+##' @param ... Values to be updated.
+##' @return Nothing special.
+##'
+##' @export
+updateRow <- function (.table, .where, ...) {
+    ## Get arguments and make sure that we get only the first value:s
+    args <- lapply(list(...), function (x) {x[1]})
+
+    ## Construct the where clause:
+    where <- .clauseWhere(.where)
+
+    ## Create the update statement template:
+    template <- "UPDATE `%s` SET %s WHERE %s"
+
+    ## Prepare the vals.
+    sets <- paste(lapply(names(args), function (key) {sprintf("`%s` = %s", key, .escapeValues(args[[key]]))}), collapse=", ")
+
+    ## Create the statement:
+    sql <- sprintf(template, .table, sets, where)
+
+    ## Execute the statement:
+    DBI::dbSendQuery(getConnection(), sql)
+}
+
+
+##' Selects rows.
+##'
+##' @param .table The name of the database table.
+##' @param ... Where clause to be \code{AND}ed.
+##' @param .ordering Ordering if any.
+##' @return Result.
+##'
+##' @import DBI
+##' @export
+selectRow <- function (.table, ..., .ordering=NULL) {
+    ## Construct the where clause:
+    where <- .clauseWhere(list(...))
+
+    ## Ordering:
+    ordering <- ifelse (is.null(.ordering), "", paste(" ORDER BY ", paste(.ordering, collapse=", ")))
+
+    ## Create the update statement template:
+    template <- "SELECT * FROM `%s` WHERE %s%s"
+
+    ## Create the statement:
+    sql <- sprintf(template, .table, where, ordering)
+
+    ## Send the query and obtain a result set:
+    resultSet <- DBI::dbSendQuery(getConnection(), sql)
+
+    ## Fetch all rows:
+    result <- DBI::dbFetch(resultSet, n=-1)
+
+    ## Clear the resultset:
+    DBI::dbClearResult(resultSet)
+
+    ## Done, return the data:
+    result
+}
+
+
+##' Checks if any rows exist.
+##'
+##' @param .table The name of the database table.
+##' @param ... Where clause to be \code{AND}ed.
+##' @return Boolean indicating if any rows exist.
+##'
+##' @import DBI
+##' @export
+existsRow <- function (.table, ...) {
+    ## Construct the where clause:
+    where <- .clauseWhere(list(...))
+
+    ## Create the update statement template:
+    template <- "SELECT count(*) as `__count` FROM `%s` WHERE %s"
+
+    ## Create the statement:
+    sql <- sprintf(template, .table, where)
+
+    ## Send the query and obtain a result set:
+    resultSet <- DBI::dbSendQuery(getConnection(), sql)
+
+    ## Fetch all rows:
+    result <- DBI::dbFetch(resultSet, n=-1)
+
+    ## Clear the resultset:
+    DBI::dbClearResult(resultSet)
+
+    ## Done, return the data:
+    result[["__count"]] > 0
+}
+
+
+##' Upserts row.
+##'
+##' @param .table The name of the table.
+##' @param .where The where clause.
+##' @param ... Values to be updated.
+##' @return Nothing special.
+##'
+##' @export
+upsertRow <- function (.table, .where, ...) {
+    ## Check if the tow exists:
+    if (do.call(existsRow, c(list(.table=.table), .where))) {
+        do.call(updateRow, c(list(.table=.table, .where=.where), list(...)))
+    }
+    else {
+        do.call(insertRow, c(list(.table=.table), .where, list(...)))
+    }
 }
