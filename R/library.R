@@ -132,22 +132,22 @@ getConnection <- function (validate=TRUE) {
 
 ##' Reads a table from the database.
 ##'
-##' @param name The name of the database table.
+##' @param .table The name of the database table.
 ##' @return The database table contents.
 ##'
 ##' @import DBI
 ##' @export
-readTable <- function (name) {
-    DBI::dbReadTable(getConnection(), name)
+readTable <- function (.table) {
+    DBI::dbReadTable(getConnection(), .table)
 }
 
 
 ##' Creates and/or populates a database table.
 ##'
+##' @param .table The name of the database table.
 ##' @param x The data to be populated. If contents are empty, it is
 ##'     used to introspect the database structure to create a table if
 ##'     it does not exist.
-##' @param name The name of the database table.
 ##' @param append If the values will be append. Otherwise will raise
 ##'     exception if the table is not new and \code{overwrite} is
 ##'     \code{FALSE}.
@@ -159,8 +159,8 @@ readTable <- function (name) {
 ##'
 ##' @import DBI
 ##' @export
-writeTable <- function (x, name, append=TRUE, overwrite=FALSE, withRowNames=FALSE) {
-    DBI::dbWriteTable(getConnection(), name, x, append=TRUE, row.names=withRowNames)
+writeTable <- function (.table, x, append=TRUE, overwrite=FALSE, withRowNames=FALSE) {
+    DBI::dbWriteTable(getConnection(), .table, x, append=TRUE, row.names=withRowNames)
 }
 
 
@@ -201,12 +201,12 @@ readData <- function (sql, ...) {
 ##'
 ##' @import DBI
 ##' @export
-writeData <- function (name, x) {
+writeData <- function (.table, x) {
     ## Get the column names from the data frame as the fields:
     fields <- paste(sprintf("`%s`", colnames(x)), collapse=", ")
 
     ## Create the SQL insert statement template:
-    sql <- sprintf("INSERT INTO %s (%s) VALUES %%s", name, fields)
+    sql <- sprintf("INSERT INTO %s (%s) VALUES %%s", .table, fields)
 
     ## Create the sql statement:
     statement <- sprintf(sql, paste(apply(x, MARGIN=1, FUN=function (row) {

@@ -25,7 +25,7 @@ Write a `data.frame` to a new table:
 
 ```{r, results="hide"}
 data(mtcars)
-writeTable(mtcars, "mtcars")
+writeTable("mtcars", mtcars)
 ```
 
 Read an entire table from the database:
@@ -38,7 +38,7 @@ head(myData)
 Write the same data with row names:
 
 ```{r, results="hide"}
-writeTable(mtcars, "mtcars2", withRowNames=TRUE)
+writeTable("mtcars2", mtcars, withRowNames=TRUE)
 ```
 
 This will result in reading with row names:
