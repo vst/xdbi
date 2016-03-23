@@ -26,7 +26,7 @@
 ##' @param tuples key/value pairs for equality test.
 ##' @return The where clause
 .clauseWhere <- function (tuples) {
-    paste(lapply(names(tuples), function (key) {sprintf("`%s` == %s", key, .escapeValues(tuples[[key]]))}), collapse=" AND ")
+    paste(lapply(names(tuples), function (key) {sprintf("`%s` = %s", key, .escapeValues(tuples[[key]]))}), collapse=" AND ")
 }
 
 
