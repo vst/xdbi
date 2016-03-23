@@ -4,15 +4,15 @@
 \alias{writeTable}
 \title{Creates and/or populates a database table.}
 \usage{
-writeTable(x, name, append = TRUE, overwrite = FALSE,
+writeTable(.table, x, append = TRUE, overwrite = FALSE,
   withRowNames = FALSE)
 }
 \arguments{
+\item{.table}{The name of the database table.}
+
 \item{x}{The data to be populated. If contents are empty, it is
 used to introspect the database structure to create a table if
 it does not exist.}
-
-\item{name}{The name of the database table.}
 
 \item{append}{If the values will be append. Otherwise will raise
 exception if the table is not new and \code{overwrite} is

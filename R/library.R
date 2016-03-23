@@ -204,7 +204,7 @@ readData <- function (sql, ...) {
 ##'
 ##' This allows partial data insertion.
 ##'
-##' @param name The database table name.
+##' @param .table The database table name.
 ##' @param x The data
 ##' @return Nothing interesting
 ##'

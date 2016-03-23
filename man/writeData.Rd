@@ -4,10 +4,10 @@
 \alias{writeData}
 \title{Write the data to the database table.}
 \usage{
-writeData(name, x)
+writeData(.table, x)
 }
 \arguments{
-\item{name}{The database table name.}
+\item{.table}{The database table name.}
 
 \item{x}{The data}
 }
